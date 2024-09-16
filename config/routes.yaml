@@ -1,0 +1,16 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+# get_all_users:
+#     path: /users
+#     # the controller value has the format 'controller_class::method_name'
+#     controller: App\Controller\UsersController::all
+# # app_user:
+# #   path: /users
+# #   controller: App\Controller\UserController::index
+# delete_user:
+#     path: /users/{id}
+#     # the controller value has the format 'controller_class::method_name'
+#     controller: App\Controller\UsersController::all

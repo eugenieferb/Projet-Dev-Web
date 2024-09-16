@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use App\Repository\UsersRepository;
+use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
+// use pour trace
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+#[Route('/users')]
+class UsersController extends AbstractController
+{
+    #[Route('/', name: 'app_users_index', methods: ['GET'])]
+    public function index(UsersRepository $usersRepository, SerializerInterface $serializer)//: Response
+    {
+        // declaration d'unfichier de trace 
+        // $log = new Logger('testgroup');
+        // $log->pushHandler(new StreamHandler('mestraces.log', Logger::INFO));   
+
+        $users_data= $usersRepository->findAll();
+
+        $context = (new ObjectNormalizerContextBuilder())
+        //group user pour séléctionner les champs ayant le group user  dans users.php
+        ->withGroups('user')    
+        ->toArray();
+        // trace 
+        // $log->info('$context');
+        // $log->info(serialize($context));
+        $users_json = $serializer-> serialize($users_data, 'json', $context);
+
+        // $log->info('json messsage');
+        // $log->info($users_json);
+
+        // Return JSON response to the frontend
+        $users = json_decode($users_json, true);
+
+        // $this->render('users/index.html.twig', ['users'=> $users_json]);
+
+        // return $this->render('users/index.html.twig', ['users'=> $users_json]); // si onutilie les templates
+        return new Response($users_json, Response::HTTP_OK, ['Content-Type' => 'application/json']);
+        //return $this->render('users/index.html.twig', ['users_json'=> $users_json,]);
+
+    }
+};
